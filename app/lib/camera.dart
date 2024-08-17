@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' show join;
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+
 
 class ScanScreen extends StatefulWidget {
   @override
@@ -44,15 +48,6 @@ class _ScanScreenState extends State<ScanScreen> {
         _imageFile = picture;
       });
 
-      final Directory extDir = await getApplicationDocumentsDirectory();
-      final String dirPath = '${extDir.path}/Pictures/flutter_scan';
-      await Directory(dirPath).create(recursive: true);
-      final String filePath = join(
-        dirPath,
-        '${DateTime.now().millisecondsSinceEpoch}.jpg',
-      );
-      print(filePath); // Debugging
-      await picture.saveTo(filePath);
       _showPopUp(context, _imageFile); // Pass context
     } catch (e) {
       print(e);
@@ -62,13 +57,7 @@ class _ScanScreenState extends State<ScanScreen> {
   Future<void> _pickImageFromGallery() async {
     final ImagePicker picker = ImagePicker();
     final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    final Directory extDir = await getApplicationDocumentsDirectory();
-    final String dirPath = '${extDir.path}/Pictures/flutter_scan';
-    await Directory(dirPath).create(recursive: true);
-    final String filePath = join(
-      dirPath,
-      '${DateTime.now().millisecondsSinceEpoch}.jpg',
-    );
+    
     if (pickedFile != null) {
       setState(() {
         _imageFile = pickedFile;
@@ -77,32 +66,53 @@ class _ScanScreenState extends State<ScanScreen> {
     }
   }
 
-  void _showPopUp(BuildContext context, XFile? image) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Scanned Ingredients'),
-          content: image != null
-              ? Image.file(
-                  File(image.path),
-                  width: 100,
-                  height: 100,
-                )
-              : Text('No image selected'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  void _showPopUp(BuildContext context, XFile? image) async{
 
+    if (image != null){
+      List<int> imageBytes = await image.readAsBytes();
+      String base64Image = base64Encode(imageBytes);
+      final Map<String, dynamic> data = {'image': base64Image};
+
+      
+      final String jsonImage = jsonEncode(data);
+      final url = Uri.parse('http://10.0.2.2:5000/scan');
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonImage,
+      );
+
+      if (response.statusCode == 200) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Scanned Ingredients'),
+              content: image != null
+                  ? Image.file(
+                      File(image.path),
+                      width: 100,
+                      height: 100,
+                    )
+                  : Text('No image selected'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Close'),
+                ),
+              ],
+            );
+          },
+        );
+      } 
+      else {
+        print('failed to connect');
+      }
+    }
+  }
+  
   @override
   void dispose() {
     _controller?.dispose();
