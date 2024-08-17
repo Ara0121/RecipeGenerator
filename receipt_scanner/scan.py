@@ -8,7 +8,7 @@ import base64
 app = Flask(__name__)
 
 @app.route('/scan', methods=['POST'])
-def scan_receipt(image_path):
+def scan_receipt():
     df_ingredient = pd.read_csv('recipe_database/ingredient.csv')
     ingredients = str(df_ingredient['ingredient'].tolist())
     
@@ -16,9 +16,7 @@ def scan_receipt(image_path):
         data = request.get_json()
         image_data = data['image']
         image_bytes = base64.b64decode(image_data)
-        image_path = os.path.join('uploaded_images', f"{filename}.jpg")
-        
-        image = PIL.Image.open(image_path)
+        image = Image.open(BytesIO(image_bytes))
         
         
         prompt = f"""
@@ -39,8 +37,9 @@ def scan_receipt(image_path):
         
         response = model.generate_content([prompt, image])
         
-        return response.text.lower().strip()
-    
+        jsonResponse = response.text.lower().strip()
+        return jsonify({'status': 'success', 'message': jsonResponse}), 200
+
     except Exception as e:
         return jsonify(debug=True, port=5000)
     
