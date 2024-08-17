@@ -35,6 +35,7 @@ salt
   
 @app.route('/scan', methods=['POST'])
 def scan():
+    print("hello world")
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'}), 400
     

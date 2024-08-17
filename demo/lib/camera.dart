@@ -9,6 +9,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 Future<String> scanImage(File imageFile) async {  // Added this function to handle the API call
+  print("hello 1");
   final uri = Uri.parse('http://localhost:5000/scan');  // Updated to point to Flask API
   final request = http.MultipartRequest('POST', uri)
     ..files.add(await http.MultipartFile.fromPath('file', imageFile.path));
