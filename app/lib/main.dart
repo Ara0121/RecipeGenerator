@@ -2,8 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
-
-//fix
+//edited
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -29,11 +28,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> loadIngredients() async {
-    final String response = await rootBundle.loadString('assets/ingredients.csv');
+    final String response = await rootBundle.loadString('assets/ingredient.csv');
     final List<String> data = const LineSplitter().convert(response);
     setState(() {
       ingredients = data;
-      filteredIngredients = ingredients;
     });
   }
 
@@ -59,7 +57,9 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
     searchController.clear();
-    _filterIngredients();
+    setState(() {
+      filteredIngredients = [];
+    });
   }
 
   void _removeIngredient(String ingredient) {
@@ -88,6 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
               border: OutlineInputBorder(),
             ),
           ),
+          SizedBox(height: 10),
           if (filteredIngredients.isNotEmpty)
             Expanded(
               child: ListView.builder(
@@ -101,22 +102,22 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           SizedBox(height: 20),
-          if (addedIngredients.isNotEmpty) ...[
-            Text('Added Ingredients:', style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 10),
-            Wrap(
-              spacing: 8.0,
-              runSpacing: 4.0,
-              children: addedIngredients.map((ingredient) {
-                return Chip(
-                  label: Text(ingredient),
-                  deleteIcon: Icon(Icons.clear),
-                  onDeleted: () => _removeIngredient(ingredient),
+          Text('Added Ingredients:', style: TextStyle(fontWeight: FontWeight.bold)),
+          SizedBox(height: 10),
+          Expanded(
+            child: ListView.builder(
+              itemCount: addedIngredients.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(addedIngredients[index]),
+                  trailing: IconButton(
+                    icon: Icon(Icons.clear),
+                    onPressed: () => _removeIngredient(addedIngredients[index]),
+                  ),
                 );
-              }).toList(),
+              },
             ),
-          ],
-          Spacer(),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
