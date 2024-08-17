@@ -166,8 +166,18 @@ List<Map<String, dynamic>> filterRecipe(
   return filteredRecipes;
 }
 
-// TODO
-// List<Map<String, dynamic>> sortRecipe(
-//   List<Map<String, dynamic>> recipes,
-//   String sortBy = 
-// )
+List<Map<String, dynamic>> sortRecipe(
+  List<Map<String, dynamic>> recipes,
+  String sortBy = null;
+) {
+  if (sortBy == 'Number of Ingredient') {
+    recipes.sort((a, b) => a['ingredient'].length.compareTo(b['ingredient'].length));
+  } else if (sortBy == 'Name (Alphabetical)') {
+    recipes.sort((a, b) => a['name'].compareTo(b['name']));
+  } else if (sortBy == 'Category (Alphabetical)') {
+    recipes.sort((a, b) => a['category'].compareTo(b['category']));
+  } else if (sortBy == 'Cuisine (Alphabetical)') {
+    recipes.sort((a, b) => a['cuisine'].compareTo(b['cuisine']));
+  }
+  return recipes;
+}
