@@ -17,6 +17,14 @@ class _RecipesScreenState extends State<RecipesScreen> {
     loadRecipes();
   }
 
+  Future<void> _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   Future<void> loadRecipes() async {
     final String response = await rootBundle.loadString('assets/recipes.json');
     final data = await json.decode(response) as List;
