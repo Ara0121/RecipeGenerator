@@ -22,22 +22,18 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _callPythonCode(); // Call Python code during widget initialization
+    _triggerPythonCode();
   }
 
-  void _callPythonCode() async {
-    final python = Python.instance;
-    python.runPythonCode('import python_hello');
-    final result = python.runPythonCode('python_hello.say_hello()');
-    print(result); // Prints the result from Python in the console
+  Future<void> _triggerPythonCode() async {
+    await http.get(Uri.parse('http://127.0.0.1:5000/hello'));
+    // No need to handle response, Python will print to its own console
   }
 }
-
 
 class MainScreen extends StatefulWidget {
   @override
