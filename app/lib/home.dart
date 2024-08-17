@@ -74,6 +74,48 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void _editIngredient(int index) {
+    final ingredient = _selectedIngredients[index]['ingredient'];
+    final currentAmount = _selectedIngredients[index]['amount'];
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Edit $ingredient'),
+          content: TextField(
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: 'Amount',
+              border: OutlineInputBorder(),
+            ),
+            controller: TextEditingController(text: currentAmount),
+            onSubmitted: (value) {
+              setState(() {
+                _selectedIngredients[index]['amount'] = value;
+              });
+              Navigator.of(context).pop();
+            },
+          ),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _removeIngredient(int index) {
+    setState(() {
+      _selectedIngredients.removeAt(index);
+    });
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -114,8 +156,22 @@ class _HomeScreenState extends State<HomeScreen> {
             child: ListView.builder(
               itemCount: _selectedIngredients.length,
               itemBuilder: (context, index) {
+                final ingredient = _selectedIngredients[index];
                 return ListTile(
-                  title: Text(_selectedIngredients[index]),
+                  title: Text('${ingredient['amount']} x ${ingredient['ingredient']}'),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () => _editIngredient(index),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () => _removeIngredient(index),
+                      ),
+                    ],
+                  ),
                 );
               },
             ),
