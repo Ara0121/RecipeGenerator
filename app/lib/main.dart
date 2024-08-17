@@ -68,3 +68,22 @@ class _MainScreenState extends State<MainScreen> {
   }
 }
 
+class HomeScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          TextField(
+            decoration: InputDecoration(
+              labelText: 'Search Recipes',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          // Additional home page content can go here
+        ],
+      ),
+    );
+  }
+}
