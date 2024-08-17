@@ -140,3 +140,19 @@ class _ScanScreenState extends State<ScanScreen> {
     );
   }
 }
+
+final gemini = GoogleGemini(
+  apiKey: "AIzaSyCIxUA9BOYIgQRnRFdq7IkvOv_TS3lF3NI",
+);
+
+String scanImage(XFile imageFile) {
+  File image = File(imageFile);
+  String query = "What is this picture?";
+
+  gemini.generateFromTextAndImages(
+    query: query,
+    image: image
+  )
+  .then((value) => print(value.text))
+  .catchError((e) => print(e));
+}
