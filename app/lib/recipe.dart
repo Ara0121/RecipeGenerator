@@ -1,34 +1,28 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
-class RecipesScreen extends StatelessWidget {
-  // Replace this with your actual recipe data
-  final List<Map<String, String>> recipes = [
-    {
-      'name': 'Spaghetti Bolognese',
-      'ingredients': 'Pasta, Tomato Sauce, Ground Beef, Garlic, Onion',
-      'instructions': '1. Cook pasta...\n2. Prepare sauce...',
-    },
-    {
-      'name': 'Chicken Curry',
-      'ingredients': 'Chicken, Curry Paste, Coconut Milk, Vegetables',
-      'instructions': '1. Cook chicken...\n2. Add curry paste...',
-    },
-    {
-      'name': 'Beef Stroganoff',
-      'ingredients': 'Beef, Mushrooms, Sour Cream, Onion, Garlic',
-      'instructions': '1. Cook beef...\n2. Add mushrooms...',
-    },
-    {
-      'name': 'Vegetable Stir Fry',
-      'ingredients': 'Vegetables, Soy Sauce, Garlic, Ginger',
-      'instructions': '1. Stir fry vegetables...\n2. Add soy sauce...',
-    },
-    {
-      'name': 'Tacos',
-      'ingredients': 'Tortillas, Ground Beef, Lettuce, Cheese, Salsa',
-      'instructions': '1. Cook beef...\n2. Prepare toppings...',
-    },
-  ];
+class RecipesScreen extends StatefulWidget {
+  @override
+  _RecipesScreenState createState() => _RecipesScreenState();
+}
+
+class _RecipesScreenState extends State<RecipesScreen> {
+  List<Map<String, String>> recipes = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadRecipes();
+  }
+
+  Future<void> loadRecipes() async {
+    final String response = await rootBundle.loadString('recipe_database/recipes.json');
+    final data = await json.decode(response) as List;
+    setState(() {
+      recipes = data.map((recipe) => Map<String, String>.from(recipe)).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
