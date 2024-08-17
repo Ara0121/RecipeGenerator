@@ -145,8 +145,9 @@ final gemini = GoogleGemini(
   apiKey: "AIzaSyCIxUA9BOYIgQRnRFdq7IkvOv_TS3lF3NI",
 );
 
-String scanImage(XFile imageFile) {
-  File image = File(imageFile);
+String scanImage(XFile imageFile = null) {
+  // File image = File(imageFile);
+  File image = File('RecipeGenerator/app/assets/receipt1.jpg')
   String query = "What is this picture?";
 
   gemini.generateFromTextAndImages(
