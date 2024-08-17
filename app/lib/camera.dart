@@ -51,11 +51,11 @@ class _ScanScreenState extends State<ScanScreen> {
         dirPath,
         '${DateTime.now().millisecondsSinceEpoch}.jpg',
       );
-
+      print(filePath); // Debugging
       await picture.saveTo(filePath);
+      _showPopUp(context, _imageFile); // Pass context
     } catch (e) {
       print(e);
-      return null;
     }
   }
 
@@ -67,7 +67,34 @@ class _ScanScreenState extends State<ScanScreen> {
       setState(() {
         _imageFile = pickedFile;
       });
+      _showPopUp(context, _imageFile); // Pass context
     }
+  }
+
+  void _showPopUp(BuildContext context, XFile? image) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Scanned Ingredients'),
+          content: image != null
+              ? Image.file(
+                  File(image.path),
+                  width: 100,
+                  height: 100,
+                )
+              : Text('No image selected'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -85,10 +112,8 @@ class _ScanScreenState extends State<ScanScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Fullscreen Camera Preview
           CameraPreview(_controller!),
           
-          // Positioned buttons at the bottom center
           Positioned(
             bottom: 20.0,
             left: 0,
@@ -110,17 +135,6 @@ class _ScanScreenState extends State<ScanScreen> {
               ],
             ),
           ),
-
-          if (_imageFile != null)
-            Positioned(
-              top: 20.0,
-              right: 20.0,
-              child: Image.file(
-                File(_imageFile!.path),
-                width: 100,
-                height: 100,
-              ),
-            ),
         ],
       ),
     );
