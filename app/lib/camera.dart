@@ -18,6 +18,7 @@ class _ScanScreenState extends State<ScanScreen> {
   @override
   void initState() {
     super.initState();
+    scanImage();
     _initializeCamera();
   }
 
