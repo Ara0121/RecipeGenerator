@@ -28,7 +28,7 @@ class _MainScreenState extends State<MainScreen> {
 
   static List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
-    ScanScreen(),  // Ensure that ScanScreen is correctly imported and used here
+    ScanScreen(),
     RecipesScreen(),
   ];
 

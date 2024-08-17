@@ -111,7 +111,6 @@ class _ScanScreenState extends State<ScanScreen> {
             ),
           ),
 
-          // Display captured or selected image
           if (_imageFile != null)
             Positioned(
               top: 20.0,
