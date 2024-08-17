@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'camera.dart';
 import 'recipe.dart';
+import 'package:flutter_python/flutter_python.dart'; //TODO
 
 void main() {
   runApp(MyApp());
@@ -8,6 +9,8 @@ void main() {
 
 class MyApp extends StatelessWidget {
   @override
+  _MyAppState createState() => _MyAppState();
+
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Chow Down',
@@ -18,6 +21,23 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    _callPythonCode(); // Call Python code during widget initialization
+  }
+
+  void _callPythonCode() async {
+    final python = Python.instance;
+    python.runPythonCode('import python_hello');
+    final result = python.runPythonCode('python_hello.say_hello()');
+    print(result); // Prints the result from Python in the console
+  }
+}
+
 
 class MainScreen extends StatefulWidget {
   @override
