@@ -17,7 +17,7 @@ class _RecipesScreenState extends State<RecipesScreen> {
   }
 
   Future<void> loadRecipes() async {
-    final String response = await rootBundle.loadString('recipe_database/recipes.json');
+    final String response = await rootBundle.loadString('assets/recipes.json');
     final data = await json.decode(response) as List;
     setState(() {
       recipes = data.map((recipe) => Map<String, String>.from(recipe)).toList();
