@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  url_launcher: ^6.0.20
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -61,7 +62,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - recipe_database/recipes.json
+    - assets/recipes.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:
