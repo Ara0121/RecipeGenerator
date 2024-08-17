@@ -59,7 +59,7 @@ class RecipeDetailScreen extends StatelessWidget {
   final dynamic recipe;
 
   RecipeDetailScreen({required this.recipe});
-  
+
   Future<void> _launchURL(String url) async {
     if (await canLaunch(url)) {
       await launch(url);
@@ -98,11 +98,11 @@ class RecipeDetailScreen extends StatelessWidget {
               onPressed: () {
                 final url = recipe['url'];
                 if (url != null && url.isNotEmpty) {
-                    _launchURL(url);
+                  _launchURL(url);
                 } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('No URL provided for this recipe')),
-                    );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('No URL provided for this recipe')),
+                  );
                 }
               },
               child: Text('View Recipe Online'),
