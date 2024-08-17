@@ -1,77 +1,9 @@
-import 'package:flutter/material.dart';
-import 'camera.dart';
-import 'recipe.dart';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Chow Down',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MainScreen(),
-    );
-  }
-}
-
-class MainScreen extends StatefulWidget {
-  @override
-  _MainScreenState createState() => _MainScreenState();
-}
-
-class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
-
-  static List<Widget> _widgetOptions = <Widget>[
-    HomeScreen(),
-    ScanScreen(),
-    RecipesScreen(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Recipe App'),
-      ),
-      body: _widgetOptions[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.camera_alt),
-            label: 'Scan',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.book),
-            label: 'Recipes',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
-        onTap: _onItemTapped,
-      ),
-    );
-  }
-}
-
+//fix
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -106,21 +38,28 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _filterIngredients() {
-    setState(() {
-      filteredIngredients = ingredients
-          .where((ingredient) => ingredient
-              .toLowerCase()
-              .contains(searchController.text.toLowerCase()))
-          .toList();
-    });
+    final query = searchController.text.toLowerCase();
+    if (query.isNotEmpty) {
+      setState(() {
+        filteredIngredients = ingredients
+            .where((ingredient) => ingredient.toLowerCase().contains(query))
+            .toList();
+      });
+    } else {
+      setState(() {
+        filteredIngredients = [];
+      });
+    }
   }
 
   void _addIngredient(String ingredient) {
-    setState(() {
-      addedIngredients.add(ingredient);
-      searchController.clear();
-      filteredIngredients = ingredients;
-    });
+    if (!addedIngredients.contains(ingredient)) {
+      setState(() {
+        addedIngredients.add(ingredient);
+      });
+    }
+    searchController.clear();
+    _filterIngredients();
   }
 
   void _removeIngredient(String ingredient) {
@@ -140,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextField(
             controller: searchController,
@@ -148,9 +88,8 @@ class _HomeScreenState extends State<HomeScreen> {
               border: OutlineInputBorder(),
             ),
           ),
-          if (searchController.text.isNotEmpty && filteredIngredients.isNotEmpty)
-            Container(
-              height: 150,
+          if (filteredIngredients.isNotEmpty)
+            Expanded(
               child: ListView.builder(
                 itemCount: filteredIngredients.length,
                 itemBuilder: (context, index) {
@@ -167,6 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(height: 10),
             Wrap(
               spacing: 8.0,
+              runSpacing: 4.0,
               children: addedIngredients.map((ingredient) {
                 return Chip(
                   label: Text(ingredient),
