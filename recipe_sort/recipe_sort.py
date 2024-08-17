@@ -65,6 +65,7 @@ sort_ing(data, ingredients)
 #print(f_match)
 f_match = sort_category(f_match, 'dessert')
 p_match = sort_category(p_match, 'dessert')
+database.close()
 sort_cuisine(cuisine_list, f_match, p_match)
 #print(f_match)
 for c in cuisine_list:
@@ -74,6 +75,5 @@ for c in cuisine_list:
         print(f)
     print("PARTIAL MATCH:")
     for p in c[2]:
-        print(c)
-database.close()
+        print(p)
 input_txt.close()
