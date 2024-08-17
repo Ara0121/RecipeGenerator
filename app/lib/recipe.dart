@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:url_launcher/url_launcher.dart';
 
 class RecipesScreen extends StatefulWidget {
   @override
@@ -87,6 +88,14 @@ class RecipeDetailScreen extends StatelessWidget {
             SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
+                final url = recipe['url'];
+                if (url != null && url.isNotEmpty) {
+                    _launchURL(url);
+                } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('No URL provided for this recipe')),
+                    );
+                }
                 // You can add a link button to the original recipe
                 // to open in a browser or perform any other action
               },
