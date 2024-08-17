@@ -11,13 +11,16 @@ def sort_ing(data, ingredients):
                 counter += 1
         if counter == len(recipe_ing):
             f_match.append(recipe)
-        elif counter > 0:
+        elif counter > (len(recipe_ing) / 2):
             p_match.append(recipe)
 
 def sort_category(match_list, category):
     for recipe in match_list:
-        if recipe.get("category") != category:
-            match_list.remove(recipe)
+        category_list = recipe.get("category")
+        for r_category in category_list:
+            if r_category != category:
+                match_list.remove(recipe)
+                break
 
 data = []
 ingredients = []
@@ -25,16 +28,17 @@ ingredients = []
 f_match = []
 #Partial match
 p_match = []
-with open('recipe_database/pinchofyum/recipe_database.json', 'r') as database:
+with open('recipe_database/recipes.json', 'r') as database:
     data = json.load(database)
 with open('recipe_sort/avaliable_ingredients', 'r') as input_txt:
     ingredients = input_txt.read().splitlines()
 
 sort_ing(data, ingredients)
-sort_category(f_match, 'Dessert')
-sort_category(p_match, 'Dessert')
+#print(p_match)
+#sort_category(f_match, 'dessert')
+sort_category(p_match, 'dessert')
 #print(f_match)
-print(p_match)
-
+for r in p_match:
+    print(r)
 database.close()
 input_txt.close()
