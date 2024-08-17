@@ -87,26 +87,3 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
-
-class RecipesScreen extends StatelessWidget {
-  // THIS CAN BE REPLACED WITH RECIPE DATA
-  final List<String> recipes = [
-    'Spaghetti Bolognese',
-    'Chicken Curry',
-    'Beef Stroganoff',
-    'Vegetable Stir Fry',
-    'Tacos',
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: recipes.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(recipes[index]),
-        );
-      },
-    );
-  }
-}
