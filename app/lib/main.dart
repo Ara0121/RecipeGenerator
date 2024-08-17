@@ -20,7 +20,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _triggerPythonCode() async {
-    await http.get(Uri.parse('http://127.0.0.1:5000/hello'));
+    await http.get(Uri.parse('http://10.0.2.2:5000/hello'));
   }
 
   Widget build(BuildContext context) {

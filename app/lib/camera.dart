@@ -62,7 +62,13 @@ class _ScanScreenState extends State<ScanScreen> {
   Future<void> _pickImageFromGallery() async {
     final ImagePicker picker = ImagePicker();
     final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
+    final Directory extDir = await getApplicationDocumentsDirectory();
+    final String dirPath = '${extDir.path}/Pictures/flutter_scan';
+    await Directory(dirPath).create(recursive: true);
+    final String filePath = join(
+      dirPath,
+      '${DateTime.now().millisecondsSinceEpoch}.jpg',
+    );
     if (pickedFile != null) {
       setState(() {
         _imageFile = pickedFile;
