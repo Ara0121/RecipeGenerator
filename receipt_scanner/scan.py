@@ -3,7 +3,7 @@ import PIL.Image
 import pandas as pd
 
 
-def scan_recipe(image_path):
+def scan_receipt(image_path):
     df_ingredient = pd.read_csv('recipe_database/ingredient.csv')
     ingredients = str(df_ingredient['ingredient'].tolist())
     
