@@ -9,6 +9,7 @@ app = Flask(__name__)
 
 @app.route('/scan', methods=['POST'])
 def scan_receipt():
+    print("start")
     df_ingredient = pd.read_csv('recipe_database/ingredient.csv')
     ingredients = str(df_ingredient['ingredient'].tolist())
     
@@ -17,6 +18,7 @@ def scan_receipt():
         image_data = data['image']
         image_bytes = base64.b64decode(image_data)
         image = Image.open(BytesIO(image_bytes))
+        print(image)
         
         
         prompt = f"""
@@ -36,7 +38,7 @@ def scan_receipt():
         model = genai.GenerativeModel('gemini-1.5-flash')
         
         response = model.generate_content([prompt, image])
-        
+        print(response)
         jsonResponse = response.text.lower().strip()
         return jsonify({'status': 'success', 'message': jsonResponse}), 200
 

@@ -83,18 +83,19 @@ class _ScanScreenState extends State<ScanScreen> {
       );
 
       if (response.statusCode == 200) {
+        print('///////////////////////YESSS//////////////////////////////////');
+        var responseJson = jsonDecode(response.body);
+        print('Processed response from Python server: ${responseJson['message']}');
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('Scanned Ingredients'),
-              content: image != null
-                  ? Image.file(
+              content: Image.file(
                       File(image.path),
                       width: 100,
                       height: 100,
-                    )
-                  : Text('No image selected'),
+                    ),
               actions: [
                 TextButton(
                   onPressed: () {
