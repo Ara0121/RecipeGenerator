@@ -1,4 +1,4 @@
-from receipt_scanner.scan import scan_receipt
+from receipt_scanner import scan_receipt
 from flask import Flask, request, jsonify
 import io
 

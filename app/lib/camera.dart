@@ -4,6 +4,26 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' show join;
+import 'dart:io';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+Future<String> scanImage(File imageFile) async {  // Added this function to handle the API call
+  final uri = Uri.parse('http://localhost:5000/scan');  // Updated to point to Flask API
+  final request = http.MultipartRequest('POST', uri)
+    ..files.add(await http.MultipartFile.fromPath('file', imageFile.path));
+  
+  final response = await request.send();
+  final responseBody = await response.stream.bytesToString();
+  
+  final responseJson = jsonDecode(responseBody);
+  
+  if (response.statusCode == 200) {
+    return responseJson['result'];
+  } else {
+    return 'Error: ${responseJson['error']}';
+  }
+}
 
 class ScanScreen extends StatefulWidget {
   @override
@@ -39,6 +59,10 @@ class _ScanScreenState extends State<ScanScreen> {
 
     try {
       XFile picture = await _controller!.takePicture();
+      final File imageFile = File(picture.path);  // Added this line to convert XFile to File
+
+      final result = await scanImage(imageFile);  // Added this line to send image to API
+      print('Scan result: $result');  // Added this line to print the result
 
       setState(() {
         _imageFile = picture;
