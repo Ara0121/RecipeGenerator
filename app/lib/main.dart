@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'camera.dart';
 import 'recipe.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(MyApp());
@@ -19,8 +20,10 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _triggerPythonCode() async {
-    await http.get(Uri.parse('http://127.0.0.1:5000/hello'));
-    // No need to handle response, Python will print to its own console
+    print('1');
+    await http.post(Uri.parse('http://10.0.2.2:5000/hello'));
+    // No need to handle response, Python will print to its own console 
+    print('2');
   }
 
   Widget build(BuildContext context) {
