@@ -10,11 +10,20 @@ class RecipesScreen extends StatefulWidget {
 
 class _RecipesScreenState extends State<RecipesScreen> {
   List<dynamic> recipes = [];
+  List<dynamic> filteredRecipes = [];
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     loadRecipes();
+    searchController.addListener(_filterRecipes);
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
   }
 
   Future<void> loadRecipes() async {
@@ -22,6 +31,17 @@ class _RecipesScreenState extends State<RecipesScreen> {
     final data = await json.decode(response) as List;
     setState(() {
       recipes = data;
+      filteredRecipes = recipes;
+    });
+  }
+
+  void _filterRecipes() {
+    setState(() {
+      filteredRecipes = recipes
+          .where((recipe) => recipe['name']
+              .toLowerCase()
+              .contains(searchController.text.toLowerCase()))
+          .toList();
     });
   }
 
@@ -29,27 +49,51 @@ class _RecipesScreenState extends State<RecipesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Recipes')),
-      body: ListView.builder(
-        itemCount: recipes.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            leading: recipes[index]['image'] != null
-                ? Image.network(recipes[index]['image'], width: 50, height: 50, fit: BoxFit.cover)
-                : null,
-            title: Text(recipes[index]['name']!),
-            trailing: Icon(Icons.arrow_forward),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => RecipeDetailScreen(
-                    recipe: recipes[index],
-                  ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                labelText: 'Search Recipes',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
                 ),
-              );
-            },
-          );
-        },
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: filteredRecipes.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: filteredRecipes[index]['image'] != null
+                      ? Image.network(
+                          filteredRecipes[index]['image'],
+                          width: 50,
+                          height: 50,
+                          fit: BoxFit.cover,
+                        )
+                      : null,
+                  title: Text(filteredRecipes[index]['name']!),
+                  trailing: Icon(Icons.arrow_forward),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RecipeDetailScreen(
+                          recipe: filteredRecipes[index],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
