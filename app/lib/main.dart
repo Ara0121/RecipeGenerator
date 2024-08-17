@@ -1,25 +1,14 @@
 import 'package:flutter/material.dart';
 import 'camera.dart';
 import 'recipe.dart';
-import 'package:flutter_python/flutter_python.dart'; //TODO
 
 void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
-
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Chow Down',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MainScreen(),
-    );
-  }
 }
 
 class _MyAppState extends State<MyApp> {
@@ -32,6 +21,16 @@ class _MyAppState extends State<MyApp> {
   Future<void> _triggerPythonCode() async {
     await http.get(Uri.parse('http://127.0.0.1:5000/hello'));
     // No need to handle response, Python will print to its own console
+  }
+
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Chow Down',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: MainScreen(),
+    );
   }
 }
 
