@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:csv/csv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AdvancedSearch extends StatefulWidget {
   @override
@@ -24,6 +25,7 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
     loadCSVData();
     final recipeData = await rootBundle.loadString('assets/recipes.json'); //
     final recipes = await json.decode(recipeData) as List; //
+    print(recipes); // TODO
   }
 
   Future<void> loadCSVData() async {
@@ -84,11 +86,11 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
                 });
               },
             ),
-            TextFormField(
-              controller: excludeController,
-              decoration: InputDecoration(labelText: 'Food to exclude'),
-            ),
-            SizedBox(height: 20),
+            // TextFormField(
+            //   controller: excludeController,
+            //   decoration: InputDecoration(labelText: 'Food to exclude'),
+            // ),
+            // SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [

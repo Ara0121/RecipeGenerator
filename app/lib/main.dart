@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'camera.dart';
 import 'recipe.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+final SharedPreferences prefs = await SharedPreferences.getInstance();
 
 void main() {
   runApp(MyApp());
