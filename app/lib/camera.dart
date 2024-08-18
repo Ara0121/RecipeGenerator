@@ -7,7 +7,6 @@ import 'package:path/path.dart' show join;
 import 'package:csv/csv.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'dart:convert';
 
 
 class ScanScreen extends StatefulWidget {
@@ -76,41 +75,45 @@ class _ScanScreenState extends State<ScanScreen> {
     }
   }
 
-  void _showPopUp(BuildContext context, XFile? image) {
-    if (image != null){
-      List<String> productList = scanImage(image) as List<String>;
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Scanned Ingredients'),
-            content: 
-                  SingleChildScrollView(
-                    child: Wrap(
-                      spacing: 8.0,
-                      runSpacing: 8.0,
-                      children: productList.map((tag) {
-                        return TagWidget(
-                          text: tag,
-                          onRemove: () {
-                            Navigator.of(context).pop(); // Close the dialog
-                            // Handle tag removal logic
-                          },
-                        );
-                      }).toList(),
+    void _showPopUp(BuildContext context, XFile? image) async{
+      if (image != null){
+        try {
+          List<String>? productList = await scanImage(image) as List<String>;
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Scanned Ingredients'),
+                content: 
+                      SingleChildScrollView(
+                        child: Wrap(
+                          spacing: 8.0,
+                          runSpacing: 8.0,
+                          children: (productList ?? []).map((tag) {
+                          return TagWidget(
+                            text: tag,
+                            onRemove: () {
+                              Navigator.of(context).pop(); // Close the dialog
+                              // Handle tag removal logic
+                            },
+                          );
+                        }).toList(),
+                      ),
                     ),
-                  ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('Close'),
-              ),
-            ],
-          );
-        },
-      );
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Close'),
+                ),
+              ],
+            );
+          },
+        );
+      } catch (e) {
+        print('Error showing popup: $e');
+      }
     }
   }
 
@@ -172,6 +175,7 @@ Future<List<String>?> scanImage(XFile? imageFile) async {
   $ingredientsList
 
   Only return the type of product, remove the description
+  Return String
 
   Example output:
   apple
@@ -189,8 +193,10 @@ Future<List<String>?> scanImage(XFile? imageFile) async {
         text: prompt,  // Query text
         images: [imageBytes],           // Pass the image bytes
       );
+      // print("I PRINT /////////${result?.content?.parts?[0].text}//////////////");
+      String? output = result?.content?.parts?[0].text;
         
-      List<String> productList = convertOutputToList(result as String);
+      List<String> productList = convertOutputToList(output as String);
       // print(result?.content?.parts?.last.text ?? 'No result found'); // debug
       return productList;
     } catch (e) {
