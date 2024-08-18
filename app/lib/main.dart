@@ -15,9 +15,8 @@ void main() {
   Gemini.init(apiKey: 'AIzaSyCIxUA9BOYIgQRnRFdq7IkvOv_TS3lF3NI');
   runApp(MyApp());
 }
-final gemini = Gemini.instance;
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -25,7 +24,57 @@ class MyApp extends StatefulWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomeScreen(),
+      home: MainScreen(),
+    );
+  }
+}
+
+class MainScreen extends StatefulWidget {
+  @override
+  _MainScreenState createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  int _selectedIndex = 0;
+
+  static List<Widget> _widgetOptions = <Widget>[
+    HomeScreen(),
+    ScanScreen(),
+    RecipesScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Recipe App'),
+      ),
+      body: _widgetOptions[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.camera_alt),
+            label: 'Scan',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.book),
+            label: 'Recipes',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.blue,
+        onTap: _onItemTapped,
+      ),
     );
   }
 }
@@ -130,55 +179,6 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
-          // TextField(
-          //   controller: _controller,
-          //   decoration: InputDecoration(
-          //     labelText: 'Search Recipes',
-          //     border: OutlineInputBorder(),
-          //   ),
-          //   onChanged: (text) {
-          //     setState(() {
-          //       _suggestions = allIngredients
-          //         .where((ingredient) => ingredient.toLowerCase().contains(text.toLowerCase()))
-          //         .take(5)
-          //         .toList();
-          //     });
-          //   },
-          // ),
-          // if (_suggestions.isNotEmpty) ...[
-          //   DropdownButton<String>(
-          //     items: _suggestions.map((ingredient) {
-          //       return DropdownMenuItem<String>(
-          //         value: ingredient,
-          //         child: Text(ingredient),
-          //       );
-          //     }).toList(),
-          //     onChanged: (selected) {
-          //       if (selected != null) {
-          //         print('Selected ingredient: $selected');
-          //         if (!selectedIngredients.contains(selected)) {
-          //           selectedIngredients.add(selected);
-          //         }
-          //       }
-          //     },
-          //     hint: Text('Select an ingredient'),
-          //   ),
-          // ],
-
-          // Wrap(
-          //   spacing: 8.0,
-          //   children: selectedIngredients.map((ingredient) {
-          //     return Chip(
-          //       label: Text(ingredient),
-          //       onDeleted: () {                                                                                                                                                                                                                                                          
-          //         setState(() {
-          //           selectedIngredients.remove(ingredient);
-          //         });
-          //       },
-          //     );
-          //   }).toList(),
-          // )
-          // Additional home page content can go here
         ],
       ),
     );
