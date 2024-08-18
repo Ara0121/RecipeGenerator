@@ -5,6 +5,10 @@ import 'recipe.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 
+List<String> allIngredients = [];
+List<String> selectedIngredients = [];
+// SharedPreferences prefs;
+final gemini = Gemini.instance;
 // final SharedPreferences prefs = await SharedPreferences.getInstance();
 
 void main() {
@@ -21,57 +25,7 @@ class MyApp extends StatefulWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MainScreen(),
-    );
-  }
-}
-
-class MainScreen extends StatefulWidget {
-  @override
-  _MainScreenState createState() => _MainScreenState();
-}
-
-class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
-
-  static List<Widget> _widgetOptions = <Widget>[
-    HomeScreen(),
-    ScanScreen(),
-    RecipesScreen(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Recipe App'),
-      ),
-      body: _widgetOptions[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.camera_alt),
-            label: 'Scan',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.book),
-            label: 'Recipes',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
-        onTap: _onItemTapped,
-      ),
+      home: HomeScreen(),
     );
   }
 }
