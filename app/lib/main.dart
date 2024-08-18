@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'camera.dart';
 import 'recipe.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
 
 void main() {
+  Gemini.init(apiKey: 'AIzaSyCIxUA9BOYIgQRnRFdq7IkvOv_TS3lF3NI');
   runApp(MyApp());
 }
+final gemini = Gemini.instance;
 
 class MyApp extends StatelessWidget {
   @override

@@ -4,6 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' show join;
+import 'package:csv/csv.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
+import 'package:flutter/services.dart' show rootBundle;
+
+
 
 class ScanScreen extends StatefulWidget {
   @override
@@ -18,7 +23,6 @@ class _ScanScreenState extends State<ScanScreen> {
   @override
   void initState() {
     super.initState();
-    scanImage();
     _initializeCamera();
   }
 
@@ -73,29 +77,30 @@ class _ScanScreenState extends State<ScanScreen> {
   }
 
   void _showPopUp(BuildContext context, XFile? image) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Scanned Ingredients'),
-          content: image != null
-              ? Image.file(
-                  File(image.path),
-                  width: 100,
-                  height: 100,
-                )
-              : Text('No image selected'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
+    if (image != null){
+      scanImage(image);
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Scanned Ingredients'),
+            content: Image.file(
+                    File(image.path),
+                    width: 100,
+                    height: 100,
+                  ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Close'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   @override
@@ -142,19 +147,43 @@ class _ScanScreenState extends State<ScanScreen> {
   }
 }
 
-final gemini = GoogleGemini(
-  apiKey: "AIzaSyCIxUA9BOYIgQRnRFdq7IkvOv_TS3lF3NI",
-);
+final gemini = Gemini.instance;
 
-String scanImage(XFile imageFile = null) {
-  // File image = File(imageFile);
-  File image = File('RecipeGenerator/app/assets/receipt1.jpg')
-  String query = "What is this picture?";
+void scanImage(XFile? imageFile) async {
+   final csvData = await rootBundle.loadString('assets/ingredient.csv');
+  List<List<dynamic>> csvTable = const CsvToListConverter().convert(csvData);
+  List<String> ingredients = csvTable.skip(1).map((row) => row[0].toString()).toList();
+  String ingredientsList = ingredients.join(', ');
 
-  gemini.generateFromTextAndImages(
-    query: query,
-    image: image
-  )
-  .then((value) => print(value.text))
-  .catchError((e) => print(e));
+  final prompt = """
+  List product names on the receipt from products listed in this list. If product is not in the list, skip it.
+
+  $ingredientsList
+
+  Only return the type of product, remove the description
+
+  Example output:
+  apple
+  banana
+  salt
+  """;
+
+  if (imageFile != null) {
+    try {
+      final file = File(imageFile.path);
+      final imageBytes = await file.readAsBytes();  // Read image bytes asynchronously
+
+      // Update the API call to use the supported model
+      final result = await gemini.textAndImage(
+        text: prompt,  // Query text
+        images: [imageBytes],           // Pass the image bytes
+      );
+
+      print(result?.content?.parts?.last.text ?? 'No result found');
+    } catch (e) {
+      print('Error during image scan: $e');
+    }
+  } else {
+    print('No image selected.');
+  }
 }
