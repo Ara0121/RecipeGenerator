@@ -126,47 +126,46 @@ void showAdvancedSearchDialog(BuildContext context) {
   );
 }
 
-List<Map<String, dynamic>> filterRecipe(
-  List<String> search_ingredient = null, 
-  String search_category = null, 
-  String search_cuisine = null, 
-  bool partial_match
-) {
-  List<Map<String, dynamic>> filteredRecipes = [];
+// List<Map<String, dynamic>> filterRecipe(
+//   List<String> search_ingredient = null, 
+//   String search_category = null, 
+//   String search_cuisine = null, 
+//   bool partial_match
+// ) {
+//   List<Map<String, dynamic>> filteredRecipes = [];
 
-  for (var recipe in recipes) {
-    // Count ingredients
-    bool ingredientsMatch = true;
-    if (search_ingredient) {
-      int ingredient_counter = 0;
-      for (var ing in recipe['ingredient']) {
-        if (ingredients.contains(ing['name'])) {
-          ingredient_counter++;
-        }
-      }
+//   for (var recipe in recipes) {
+//     // Count ingredients
+//     bool ingredientsMatch = true;
+//     if (search_ingredient) {
+//       int ingredient_counter = 0;
+//       for (var ing in recipe['ingredient']) {
+//         if (ingredients.contains(ing['name'])) {
+//           ingredient_counter++;
+//         }
+//       }
 
-      ingredientsMatch = (partialMatch && ingredientCounter >= recipe['ingredient'].length / 2) || (!partialMatch && ingredientCounter == recipe['ingredient'].length);
-    }
+//       ingredientsMatch = (partialMatch && ingredientCounter >= recipe['ingredient'].length / 2) || (!partialMatch && ingredientCounter == recipe['ingredient'].length);
+//     }
 
-    // Check category
-    bool categoryMatch = true;
-    if (search_category) {
-      categoryMatch = recipe['category'].contains(searchCategory);
-    }
+//     // Check category
+//     bool categoryMatch = true;
+//     if (search_category) {
+//       categoryMatch = recipe['category'].contains(searchCategory);
+//     }
 
-    // Check cuisine
-    bool cuisineMatch = true;
-    if (search_cuisine) {
-      cuisineMatch = recipe['cuisine'] == searchCuisine;
-    }
+//     // Check cuisine
+//     bool cuisineMatch = true;
+//     if (search_cuisine) {
+//       cuisineMatch = recipe['cuisine'] == searchCuisine;
+//     }
 
-    if (ingredientsMatch && categoryMatch && cuisineMatch) {
-      filteredRecipes.add(recipe);
-    }
-  }
-
-  return filteredRecipes;
-}
+//     if (ingredientsMatch && categoryMatch && cuisineMatch) {
+//       filteredRecipes.add(recipe);
+//     }
+//   }
+//   return filteredRecipes;
+// }
 
 List<Map<String, dynamic>> sortRecipe(
   List<Map<String, dynamic>> recipes,

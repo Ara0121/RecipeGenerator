@@ -4,10 +4,13 @@ import 'recipe.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final SharedPreferences prefs = await SharedPreferences.getInstance();
+import 'package:flutter_gemini/flutter_gemini.dart';
 
 void main() {
+  Gemini.init(apiKey: 'AIzaSyCIxUA9BOYIgQRnRFdq7IkvOv_TS3lF3NI');
   runApp(MyApp());
 }
+final gemini = Gemini.instance;
 
 class MyApp extends StatelessWidget {
   @override
