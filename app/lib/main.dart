@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'camera.dart';
 import 'recipe.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:convert';
 
 List<String> allIngredients = [];
 List<String> selectedIngredients = [];
-SharedPreferences prefs;
+// SharedPreferences prefs;
 final gemini = Gemini.instance;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter is initialized before async operations
   Gemini.init(apiKey: 'AIzaSyCIxUA9BOYIgQRnRFdq7IkvOv_TS3lF3NI');
-  await initSharedPreferences();
+  // await initSharedPreferences();
   await loadIngredients();
   runApp(MyApp());
 }
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MainScreen(),
+      home: HomeScreen(),
     );
   }
 }
@@ -40,7 +40,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _controller = TextEditingController();
   final List<String> _filteredIngredients = [];
-  String _selectedIngredient;
+  String _selectedIngredient = '';
 
   @override
   void initState() {
@@ -99,16 +99,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 }).toList(),
                 onChanged: (value) {
-                  _addIngredient(value);
+                  _addIngredient(value as String);
                 },
               ),
             ),
           ],
           SizedBox(height: 16.0),
-          Text(
-            'Selected Ingredients:',
-            style: Theme.of(context).textTheme.headline6,
-          ),
+          // Text(
+          //   'Selected Ingredients:',
+          //   style: Theme.of(context).textTheme.headline6,
+          // ),
           SizedBox(height: 8.0),
           Wrap(
             spacing: 8.0,
@@ -133,11 +133,11 @@ class _HomeScreenState extends State<HomeScreen> {
 Future<void> loadIngredients() async {
   final String response = await rootBundle.loadString('assets/ingredient.csv');
   final List<String> data = const LineSplitter().convert(response);
-  setState(() {
-    allIngredients = data;
-  });
+  // setState(() {
+  allIngredients = data;
+  // });
 }
 
-Future<void> initSharedPreferences() async {
-  prefs = await SharedPreferences.getInstance();
-}
+// Future<void> initSharedPreferences() async {
+//   prefs = await SharedPreferences.getInstance();
+// }

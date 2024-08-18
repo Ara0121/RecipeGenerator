@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:csv/csv.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 
 class AdvancedSearch extends StatefulWidget {
   @override
@@ -23,9 +23,9 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
   void initState() {
     super.initState();
     loadCSVData();
-    final recipeData = await rootBundle.loadString('assets/recipes.json'); //
-    final recipes = await json.decode(recipeData) as List; //
-    print(recipes); // TODO
+    // final recipeData = await rootBundle.loadString('assets/recipes.json'); //
+    // final recipes = await json.decode(recipeData) as List; //
+    // print(recipes); // TODO
   }
 
   Future<void> loadCSVData() async {
@@ -167,18 +167,18 @@ void showAdvancedSearchDialog(BuildContext context) {
 //   return filteredRecipes;
 // }
 
-List<Map<String, dynamic>> sortRecipe(
-  List<Map<String, dynamic>> recipes,
-  String sortBy = null;
-) {
-  if (sortBy == 'Number of Ingredient') {
-    recipes.sort((a, b) => a['ingredient'].length.compareTo(b['ingredient'].length));
-  } else if (sortBy == 'Name (Alphabetical)') {
-    recipes.sort((a, b) => a['name'].compareTo(b['name']));
-  } else if (sortBy == 'Category (Alphabetical)') {
-    recipes.sort((a, b) => a['category'].compareTo(b['category']));
-  } else if (sortBy == 'Cuisine (Alphabetical)') {
-    recipes.sort((a, b) => a['cuisine'].compareTo(b['cuisine']));
-  }
-  return recipes;
-}
+// List<Map<String, dynamic>> sortRecipe(
+//   List<Map<String, dynamic>> recipes,
+//   String sortBy = null;
+// ) {
+//   if (sortBy == 'Number of Ingredient') {
+//     recipes.sort((a, b) => a['ingredient'].length.compareTo(b['ingredient'].length));
+//   } else if (sortBy == 'Name (Alphabetical)') {
+//     recipes.sort((a, b) => a['name'].compareTo(b['name']));
+//   } else if (sortBy == 'Category (Alphabetical)') {
+//     recipes.sort((a, b) => a['category'].compareTo(b['category']));
+//   } else if (sortBy == 'Cuisine (Alphabetical)') {
+//     recipes.sort((a, b) => a['cuisine'].compareTo(b['cuisine']));
+//   }
+//   return recipes;
+// }
