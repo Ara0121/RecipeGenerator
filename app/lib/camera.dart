@@ -7,7 +7,7 @@ import 'package:path/path.dart' show join;
 import 'package:csv/csv.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:flutter/services.dart' show rootBundle;
-
+import 'dart:convert';
 
 
 class ScanScreen extends StatefulWidget {
@@ -78,16 +78,27 @@ class _ScanScreenState extends State<ScanScreen> {
 
   void _showPopUp(BuildContext context, XFile? image) {
     if (image != null){
-      scanImage(image);
+      List<String> productList = scanImage(image) as List<String>;
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('Scanned Ingredients'),
-            content: Image.file(
-                    File(image.path),
-                    width: 100,
-                    height: 100,
+            content: 
+                  SingleChildScrollView(
+                    child: Wrap(
+                      spacing: 8.0,
+                      runSpacing: 8.0,
+                      children: productList.map((tag) {
+                        return TagWidget(
+                          text: tag,
+                          onRemove: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                            // Handle tag removal logic
+                          },
+                        );
+                      }).toList(),
+                    ),
                   ),
             actions: [
               TextButton(
@@ -149,7 +160,7 @@ class _ScanScreenState extends State<ScanScreen> {
 
 final gemini = Gemini.instance;
 
-void scanImage(XFile? imageFile) async {
+Future<List<String>?> scanImage(XFile? imageFile) async {
    final csvData = await rootBundle.loadString('assets/ingredient.csv');
   List<List<dynamic>> csvTable = const CsvToListConverter().convert(csvData);
   List<String> ingredients = csvTable.skip(1).map((row) => row[0].toString()).toList();
@@ -178,12 +189,54 @@ void scanImage(XFile? imageFile) async {
         text: prompt,  // Query text
         images: [imageBytes],           // Pass the image bytes
       );
-
-      print(result?.content?.parts?.last.text ?? 'No result found');
+        
+      List<String> productList = convertOutputToList(result as String);
+      // print(result?.content?.parts?.last.text ?? 'No result found'); // debug
+      return productList;
     } catch (e) {
       print('Error during image scan: $e');
+      return null;
     }
   } else {
-    print('No image selected.');
+    return null;
+  }
+}
+
+List<String> convertOutputToList(String output) {
+  // Split the output by new lines and remove any leading/trailing whitespace
+  List<String> lines = output
+      .trim() // Remove leading/trailing whitespace
+      .split('\n') // Split by new lines
+      .map((line) => line.trim()) // Remove any extra whitespace from each line
+      .where((line) => line.isNotEmpty) // Filter out empty lines
+      .toList(); // Convert to a List
+
+  return lines;
+}
+
+
+
+
+///// tag widget //////
+class TagWidget extends StatelessWidget {
+  final String text;
+  final VoidCallback onRemove;
+
+  TagWidget({required this.text, required this.onRemove});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(right: 8.0, bottom: 8.0),
+      child: Chip(
+        backgroundColor: Colors.blue,
+        label: Text(
+          text,
+          style: TextStyle(color: Colors.white),
+        ),
+        deleteIcon: Icon(Icons.cancel, color: Colors.white),
+        onDeleted: onRemove,
+      ),
+    );
   }
 }

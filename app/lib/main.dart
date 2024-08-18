@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'camera.dart';
 import 'recipe.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-final SharedPreferences prefs = await SharedPreferences.getInstance();
 import 'package:flutter_gemini/flutter_gemini.dart';
+
+// final SharedPreferences prefs = await SharedPreferences.getInstance();
 
 void main() {
   Gemini.init(apiKey: 'AIzaSyCIxUA9BOYIgQRnRFdq7IkvOv_TS3lF3NI');
