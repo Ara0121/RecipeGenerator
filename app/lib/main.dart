@@ -4,10 +4,16 @@ import 'recipe.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 
-// final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-void main() {
+Future<List<String>> getProductList() async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getStringList('product_list') ?? [];
+}
+
+
+void main() async{
   Gemini.init(apiKey: 'AIzaSyCIxUA9BOYIgQRnRFdq7IkvOv_TS3lF3NI');
+  List<String> ingredients = await getProductList();
   runApp(MyApp());
 }
 final gemini = Gemini.instance;

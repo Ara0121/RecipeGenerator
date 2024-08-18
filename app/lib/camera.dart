@@ -7,6 +7,8 @@ import 'package:path/path.dart' show join;
 import 'package:csv/csv.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 
 class ScanScreen extends StatefulWidget {
@@ -79,6 +81,9 @@ class _ScanScreenState extends State<ScanScreen> {
       if (image != null){
         try {
           List<String>? productList = await scanImage(image) as List<String>;
+          await saveProductList(productList);
+          
+
           showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -220,6 +225,11 @@ List<String> convertOutputToList(String output) {
   return lines;
 }
 
+
+Future<void> saveProductList(List<String> productList) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setStringList('product_list', productList);
+}
 
 
 
