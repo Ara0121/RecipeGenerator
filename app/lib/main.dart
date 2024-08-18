@@ -161,11 +161,27 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (selected != null) {
                   // Handle the selected ingredient
                   print('Selected ingredient: $selected');
+                  if (!selectedIngredients.contains(selected)) {
+                    selectedIngredients.add(selected);
+                  }
                 }
               },
               hint: Text('Select an ingredient'),
             ),
           ],
+          // Wrap(
+          //   spacing: 8.0,
+          //   children: selectedIngredients.map((ingredient) {
+          //     return Chip(
+          //       label: Text(ingredient),
+          //       onDeleted: () {
+          //         setState(() {
+          //           selectedIngredients.remove(ingredient);
+          //         });
+          //       },
+          //     );
+          //   }).toList(),
+          // )
           // Additional home page content can go here
         ],
       ),
