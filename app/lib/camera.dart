@@ -4,6 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' show join;
+import 'package:csv/csv.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:shared_preferences/shared_preferences.dart';
+
+
 
 class ScanScreen extends StatefulWidget {
   @override
@@ -71,30 +77,49 @@ class _ScanScreenState extends State<ScanScreen> {
     }
   }
 
-  void _showPopUp(BuildContext context, XFile? image) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Scanned Ingredients'),
-          content: image != null
-              ? Image.file(
-                  File(image.path),
-                  width: 100,
-                  height: 100,
-                )
-              : Text('No image selected'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Close'),
-            ),
-          ],
+    void _showPopUp(BuildContext context, XFile? image) async{
+      if (image != null){
+        try {
+          List<String>? productList = await scanImage(image) as List<String>;
+          await saveProductList(productList);
+          
+
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Scanned Ingredients'),
+                content: 
+                      SingleChildScrollView(
+                        child: Wrap(
+                          spacing: 8.0,
+                          runSpacing: 8.0,
+                          children: (productList ?? []).map((tag) {
+                          return TagWidget(
+                            text: tag,
+                            onRemove: () {
+                              Navigator.of(context).pop(); // Close the dialog
+                              // Handle tag removal logic
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Close'),
+                ),
+              ],
+            );
+          },
         );
-      },
-    );
+      } catch (e) {
+        print('Error showing popup: $e');
+      }
+    }
   }
 
   @override
@@ -136,6 +161,97 @@ class _ScanScreenState extends State<ScanScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+final gemini = Gemini.instance;
+
+Future<List<String>?> scanImage(XFile? imageFile) async {
+   final csvData = await rootBundle.loadString('assets/ingredient.csv');
+  List<List<dynamic>> csvTable = const CsvToListConverter().convert(csvData);
+  List<String> ingredients = csvTable.skip(1).map((row) => row[0].toString()).toList();
+  String ingredientsList = ingredients.join(', ');
+
+  final prompt = """
+  List product names on the receipt from products listed in this list. If product is not in the list, skip it.
+
+  $ingredientsList
+
+  Only return the type of product, remove the description
+  Return String
+
+  Example output:
+  apple
+  banana
+  salt
+  """;
+
+  if (imageFile != null) {
+    try {
+      final file = File(imageFile.path);
+      final imageBytes = await file.readAsBytes();  // Read image bytes asynchronously
+
+      // Update the API call to use the supported model
+      final result = await gemini.textAndImage(
+        text: prompt,  // Query text
+        images: [imageBytes],           // Pass the image bytes
+      );
+      // print("I PRINT /////////${result?.content?.parts?[0].text}//////////////");
+      String? output = result?.content?.parts?[0].text;
+        
+      List<String> productList = convertOutputToList(output as String);
+      // print(result?.content?.parts?.last.text ?? 'No result found'); // debug
+      return productList;
+    } catch (e) {
+      print('Error during image scan: $e');
+      return null;
+    }
+  } else {
+    return null;
+  }
+}
+
+List<String> convertOutputToList(String output) {
+  // Split the output by new lines and remove any leading/trailing whitespace
+  List<String> lines = output
+      .trim() // Remove leading/trailing whitespace
+      .split('\n') // Split by new lines
+      .map((line) => line.trim()) // Remove any extra whitespace from each line
+      .where((line) => line.isNotEmpty) // Filter out empty lines
+      .toList(); // Convert to a List
+
+  return lines;
+}
+
+
+Future<void> saveProductList(List<String> productList) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setStringList('product_list', productList);
+}
+
+
+
+///// tag widget //////
+class TagWidget extends StatelessWidget {
+  final String text;
+  final VoidCallback onRemove;
+
+  TagWidget({required this.text, required this.onRemove});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(right: 8.0, bottom: 8.0),
+      child: Chip(
+        backgroundColor: Colors.blue,
+        label: Text(
+          text,
+          style: TextStyle(color: Colors.white),
+        ),
+        deleteIcon: Icon(Icons.cancel, color: Colors.white),
+        onDeleted: onRemove,
       ),
     );
   }
