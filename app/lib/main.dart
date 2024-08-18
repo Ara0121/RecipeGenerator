@@ -86,10 +86,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _controller = TextEditingController();
-  List<String> _suggestions = [];
-  List<String> selectedIngredients = [];
   List<String> allIngredients = [
-    // Add your ingredients here
     'adzuki beans',
     'aioli',
     'allspice',
@@ -117,71 +114,172 @@ class _HomeScreenState extends State<HomeScreen> {
     'beef',
     'beetroot',
     'bell pepper',
-    'bison',
-    'black beans',
-    'black pepper',
-    'black pepper powder',
-    'black-eyed peas',
-    'blue cheese dressing',
-    'blueberry',
-    'brazil nuts',
-    'broad beans',
-    'broccoli',
-    'buckwheat',
     'buffalo',
   ];
+  List<String> filteredIngredients = [];
+  List<String> selectedIngredients = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // Initially show all ingredients
+    filteredIngredients = allIngredients;
+    // Add a listener to the search controller
+    _controller.addListener(_filterIngredients);
+  }
+
+  void _filterIngredients() {
+    String query = _controller.text.toLowerCase();
+    setState(() {
+      filteredIngredients = allIngredients.where((ingredient) {
+        return ingredient.toLowerCase().contains(query);
+      }).toList();
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Ingredients'),
+      ),
+      body: Column(
         children: [
-          Autocomplete<String>(
-            optionsBuilder: (TextEditingValue textEditingValue) {
-              if (textEditingValue.text.isEmpty) {
-                return const Iterable<String>.empty();
-              }
-              // Show the top suggestion as the first result
-              return allIngredients.where((String ingredient) {
-                return ingredient
-                    .toLowerCase()
-                    .contains(textEditingValue.text.toLowerCase());
-              }).take(1); // Take only the top suggestion
-            },
-            onSelected: (String selected) {
-              setState(() {
-                if (!selectedIngredients.contains(selected)) {
-                  selectedIngredients.add(selected);
-                }
-              });
-            },
-            fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
-              return TextField(
-                controller: controller,
-                focusNode: focusNode,
-                decoration: InputDecoration(
-                  labelText: 'Search Ingredients',
-                  border: OutlineInputBorder(),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _controller,
+              decoration: InputDecoration(
+                labelText: 'Search Ingredients',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
                 ),
-                onChanged: (text) {
-                  // Automatically select the top suggestion when typing
-                  final topSuggestion = allIngredients.firstWhere(
-                      (ingredient) => ingredient.toLowerCase().contains(text.toLowerCase()),
-                      orElse: () => '');
-                  if (topSuggestion.isNotEmpty) {
-                    controller.text = topSuggestion;
-                    controller.selection = TextSelection.fromPosition(
-                      TextPosition(offset: topSuggestion.length),
-                    );
-                  }
-                },
-              );
-            },
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: filteredIngredients.length,
+              itemBuilder: (context, index) {
+                final ingredient = filteredIngredients[index];
+                return ListTile(
+                  title: Text(ingredient),
+                  trailing: selectedIngredients.contains(ingredient)
+                      ? Icon(Icons.check, color: Colors.green)
+                      : null,
+                  onTap: () {
+                    setState(() {
+                      if (selectedIngredients.contains(ingredient)) {
+                        selectedIngredients.remove(ingredient);
+                      } else {
+                        selectedIngredients.add(ingredient);
+                      }
+                    });
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),
     );
   }
 }
+
+// class _HomeScreenState extends State<HomeScreen> {
+//   final TextEditingController _controller = TextEditingController();
+//   List<String> _suggestions = [];
+//   List<String> selectedIngredients = [];
+//   List<String> allIngredients = [
+//     // Add your ingredients here
+//     'adzuki beans',
+//     'aioli',
+//     'allspice',
+//     'almond oil',
+//     'almonds',
+//     'amaranth',
+//     'anchovies',
+//     'anise',
+//     'apple',
+//     'asian sesame dressing',
+//     'asparagus',
+//     'avocado',
+//     'avocado oil',
+//     'bacon',
+//     'baking powder',
+//     'baking soda',
+//     'balsamic dressing',
+//     'balsamic glaze',
+//     'balsamic glaze dressing',
+//     'banana',
+//     'barbecue sauce',
+//     'barley',
+//     'basil',
+//     'bay leaves',
+//     'beef',
+//     'beetroot',
+//     'bell pepper',
+//     'buffalo',
+//   ];
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: Text('Recipes')),
+//       body: Column(
+//         children: [
+//           Padding(
+//             padding: const EdgeInsets.all(8.0),
+//             child: TextField(
+//               controller: searchController,
+//               decoration: InputDecoration(
+//                 labelText: 'Search Recipes',
+//                 prefixIcon: Icon(Icons.search),
+//                 border: OutlineInputBorder(
+//                   borderRadius: BorderRadius.circular(8.0),
+//                 ),
+//               ),
+//             ),
+//           ),
+//           Expanded(
+//             child: ListView.builder(
+//               itemCount: filteredRecipes.length,
+//               itemBuilder: (context, index) {
+//                 return ListTile(
+//                   leading: filteredRecipes[index]['image'] != null
+//                       ? Image.network(
+//                           filteredRecipes[index]['image'],
+//                           width: 50,
+//                           height: 50,
+//                           fit: BoxFit.cover,
+//                         )
+//                       : null,
+//                   title: Text(filteredRecipes[index]['name']!),
+//                   trailing: Icon(Icons.arrow_forward),
+//                   onTap: () {
+//                     Navigator.push(
+//                       context,
+//                       MaterialPageRoute(
+//                         builder: (context) => RecipeDetailScreen(
+//                           recipe: filteredRecipes[index],
+//                         ),
+//                       ),
+//                     );
+//                   },
+//                 );
+//               },
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
